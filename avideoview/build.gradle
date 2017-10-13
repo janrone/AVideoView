@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.janrone'
-version '0.1.1'
+version '1.0-SNAPSHOT'
 
 android {
     compileSdkVersion 25
