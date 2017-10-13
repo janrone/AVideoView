@@ -36,6 +36,8 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.danikula.videocache.HttpProxyCacheServer;
+import com.danikula.videocache.file.FileNameGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -320,15 +322,14 @@ public class UniversalVideoView extends SurfaceView
             mMediaPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);
             mCurrentBufferPercentage = 0;
 
-//
-//            if(isCache){
-//                String proxyUrl = proxy.getProxyUrl(mUri.toString());
-//                mMediaPlayer.setDataSource(mContext,Uri.parse(proxyUrl));
-//            }else {
-//                mMediaPlayer.setDataSource(mContext, mUri);
-//            }
 
-            mMediaPlayer.setDataSource(mContext, mUri);
+            if(proxy != null){
+                String proxyUrl = proxy.getProxyUrl(mUri.toString());
+                mMediaPlayer.setDataSource(mContext, Uri.parse(proxyUrl));
+            }else {
+                mMediaPlayer.setDataSource(mContext, mUri);
+            }
+            //mMediaPlayer.setDataSource(mContext, mUri);
             mMediaPlayer.setDisplay(mSurfaceHolder);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);
@@ -887,30 +888,19 @@ public class UniversalVideoView extends SurfaceView
     }
 
     private HttpProxyCacheServer proxy;
-    public HttpProxyCacheServer setCacheInfo(String folder, final String name){
+    public HttpProxyCacheServer setCacheInfo(File folder, final String name){
         HttpProxyCacheServer proxy =new HttpProxyCacheServer.Builder(mContext)
-                .cacheDirectory(new File(folder))
-//                .fileNameGenerator(new FileNameGenerator() {
-//                    @Override
-//                    public String generate(String url) {
-//                        return name;
-//                    }
-//                })       // 1 Gb for cache
+                .cacheDirectory((folder))
+                .fileNameGenerator(new FileNameGenerator() {
+                    @Override
+                    public String generate(String url) {
+                        return name;
+                    }
+                })
                 .build();
         return this.proxy = proxy;
     }
 
-//    private HttpProxyCacheServer getProxy(){
-//        return new HttpProxyCacheServer.Builder(mContext)
-//                .cacheDirectory(new File(folder))
-//                .fileNameGenerator(new FileNameGenerator() {
-//                    @Override
-//                    public String generate(String url) {
-//                        return name;
-//                    }
-//                })       // 1 Gb for cache
-//                .build();
-//    }
 
 
     public interface VideoViewCallback {
